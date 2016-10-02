@@ -11,13 +11,15 @@ function markdownitLinkAttributes (md, config) {
 
   md.renderer.rules.link_open = function (tokens, idx, options, env, self) {
     attributes.forEach(function (attr) {
+
       var value = config[attr]
       var aIndex = tokens[idx].attrIndex(attr)
 
-      if (aIndex < 0) { // attr doesn't exist, add new attribute
-        tokens[idx].attrPush([attr, value])
-      } else { // attr already exists, overwrite it
-        tokens[idx].attrs[aIndex][1] = value // replace value of existing attr
+      if (tokens[idx].attrIndex('href') >= 0) {
+        var href = tokens[idx].attrs[tokens[idx].attrIndex('href')][1]
+        if (aIndex < 0 && !href.startsWith('#')) { // href not #something, attr doesn't exist, add new attribute
+          tokens[idx].attrPush([attr, value])
+        }
       }
     })
 
